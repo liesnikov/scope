@@ -64,9 +64,7 @@ module DefScope where
 
       iLawfulMonoidScope : IsLawfulMonoid (Scope name)
       iLawfulMonoidScope .rightIdentity [] = refl
-      iLawfulMonoidScope .rightIdentity (x ∷ xs)
-        rewrite ++-[] (x ∷ xs)
-        = refl
+      iLawfulMonoidScope .rightIdentity (x ∷ xs) = refl
 
       iLawfulMonoidScope .leftIdentity [] = refl
       iLawfulMonoidScope .leftIdentity (x ∷ xs)
@@ -75,8 +73,7 @@ module DefScope where
 
       iLawfulMonoidScope .concatenation [] = refl
       iLawfulMonoidScope .concatenation (x ∷ xs)
-        rewrite ++-[] (x ∷ xs)
-          | concatenation ⦃ iMonoidA = iMonoidScope ⦄ xs
+        rewrite concatenation ⦃ iMonoidA = iMonoidScope ⦄ xs
         = refl
 
   bind : Scope name → @0 name  → Scope name
@@ -231,11 +228,11 @@ opaque
   singBind
     : {@0 α : Scope name} {@0 x : name}
     → Singleton α → Singleton (bind α x)
-  singBind = singCong2 _∷_ singErase
+  singBind s = singCong2 _∷_ singErase s
   {-# COMPILE AGDA2HS singBind #-}
 
   singUnbind : {@0 x : name} {@0 α : Scope name} → Singleton (α ▸ x) → Singleton α
-  singUnbind = singTail
+  singUnbind s = singTail s
   {-# COMPILE AGDA2HS singUnbind #-}
 
 opaque
