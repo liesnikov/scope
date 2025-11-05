@@ -10,3 +10,4 @@ MAlonzo
 *~
 lib
 dist-newstyle
+src/**/*.hs
