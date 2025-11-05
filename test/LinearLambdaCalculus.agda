@@ -13,7 +13,7 @@ variable
 
 data Term (@0 α : Scope name) : Set where
   Var : (@0 x : name) → @0 (α ≡ [ x ]) → Term α
-  Lam : (@0 y : name) → Term (y ◃ α) → Term α
+  Lam : (@0 y : name) → Term (α ▸ y) → Term α
   App : α₁ ⋈ α₂ ≡ α → Term α₁ → Term α₂ → Term α
 {-# COMPILE AGDA2HS Term deriving Show #-}
 
