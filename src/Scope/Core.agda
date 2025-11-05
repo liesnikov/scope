@@ -194,11 +194,11 @@ module Combinations where
 
   opaque
     unfolding extScope
-    rezzExtScope : {@0 α : Scope name} {@0 rβ : RScope name}
-      → Rezz α → Rezz rβ → Rezz (extScope α rβ)
-    rezzExtScope αRun (rezz []) = αRun
-    rezzExtScope (rezz α) (rezz (Erased x ∷ rβ)) = rezzExtScope (rezz (α ▸ x)) (rezz rβ)
-    {-# COMPILE AGDA2HS rezzExtScope #-}
+    singExtScope : {@0 α : Scope name} {@0 rβ : RScope name}
+      → Singleton α → Singleton rβ → Singleton (extScope α rβ)
+    singExtScope αRun (sing []) = αRun
+    singExtScope (sing α) (sing (Erased x ∷ rβ)) = singExtScope (sing (α ▸ x)) (sing rβ)
+    {-# COMPILE AGDA2HS singExtScope #-}
 
 {- end of module Combinations -}
 open Combinations public
@@ -228,17 +228,17 @@ opaque
 
 opaque
   unfolding Scope
-  rezzBind
+  singBind
     : {@0 α : Scope name} {@0 x : name}
-    → Rezz α → Rezz (bind α x)
-  rezzBind = rezzCong2 _∷_ rezzErase
-  {-# COMPILE AGDA2HS rezzBind #-}
+    → Singleton α → Singleton (bind α x)
+  singBind = singCong2 _∷_ singErase
+  {-# COMPILE AGDA2HS singBind #-}
 
-  rezzUnbind : {@0 x : name} {@0 α : Scope name} → Rezz (α ▸ x) → Rezz α
-  rezzUnbind = rezzTail
-  {-# COMPILE AGDA2HS rezzUnbind #-}
+  singUnbind : {@0 x : name} {@0 α : Scope name} → Singleton (α ▸ x) → Singleton α
+  singUnbind = singTail
+  {-# COMPILE AGDA2HS singUnbind #-}
 
 opaque
-  unfolding Scope iLawfulMonoidScope RScope iLawfulMonoidRScope extScope extScopeConcatEmpty rezzExtScope caseScope caseRScope rezzBind
+  unfolding Scope iLawfulMonoidScope RScope iLawfulMonoidRScope extScope extScopeConcatEmpty singExtScope caseScope caseRScope singBind
   ScopeCoreThings : Set₁
   ScopeCoreThings = Set

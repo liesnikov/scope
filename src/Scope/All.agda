@@ -139,9 +139,9 @@ opaque
   mapAll f (List.ACons p ps) = List.ACons (f p) (mapAll f ps)
   {-# COMPILE AGDA2HS mapAll #-}
 
-  tabulateAll : Rezz α → (f : ∀ {@0 x} → (x ∈ α) → p x) → All p α
-  tabulateAll (rezz []) f = List.ANil
-  tabulateAll (rezz (x ∷ α)) f = List.ACons (f inHere) (tabulateAll (rezz-id) (f ∘ inThere))
+  tabulateAll : Singleton α → (f : ∀ {@0 x} → (x ∈ α) → p x) → All p α
+  tabulateAll (sing []) f = List.ANil
+  tabulateAll (sing (x ∷ α)) f = List.ACons (f inHere) (tabulateAll (sing-id) (f ∘ inThere))
   {-# COMPILE AGDA2HS tabulateAll #-}
 
   allIn : All p α → All (λ el → p el × el ∈ α) α
@@ -149,10 +149,10 @@ opaque
   allIn (List.ACons x al) = List.ACons (x , inHere) (mapAll (second inThere) (allIn al))
   {-# COMPILE AGDA2HS allIn #-}
 
-  rezzAll : All p α → Rezz α
-  rezzAll List.ANil = rezz []
-  rezzAll (List.ACons {x = x} _ xs) = rezzCong2 (_∷_) rezzErase (rezzAll xs)
-  {-# COMPILE AGDA2HS rezzAll #-}
+  singAll : All p α → Singleton α
+  singAll List.ANil = sing []
+  singAll (List.ACons {x = x} _ xs) = singCong2 (_∷_) singErase (singAll xs)
+  {-# COMPILE AGDA2HS singAll #-}
 
   allInScope : ∀ {@0 γ}
                (als : All (λ c → c ∈ γ) α)
@@ -176,9 +176,9 @@ opaque
   mapAllR f (List.ACons p ps) = List.ACons (f p) (mapAllR f ps)
   {-# COMPILE AGDA2HS mapAllR #-}
 
-  tabulateAllR : Rezz rα → (f : ∀ {@0 x} → (rα ∋ x) → p x) → AllR p rα
-  tabulateAllR (rezz []) f = List.ANil
-  tabulateAllR (rezz (x ∷ α)) f = List.ACons (f inRHere) (tabulateAllR (rezz-id) (f ∘ inRThere))
+  tabulateAllR : Singleton rα → (f : ∀ {@0 x} → (rα ∋ x) → p x) → AllR p rα
+  tabulateAllR (sing []) f = List.ANil
+  tabulateAllR (sing (x ∷ α)) f = List.ACons (f inRHere) (tabulateAllR (sing-id) (f ∘ inRThere))
   {-# COMPILE AGDA2HS tabulateAllR #-}
 
   allInR : AllR p rα → AllR (λ el → p el × rα ∋ el) rα
@@ -186,10 +186,10 @@ opaque
   allInR (List.ACons x al) = List.ACons (x , inRHere) (mapAllR (second inRThere) (allInR al))
   {-# COMPILE AGDA2HS allInR #-}
 
-  rezzAllR : AllR p rα → Rezz rα
-  rezzAllR List.ANil = rezz []
-  rezzAllR (List.ACons {x = x} _ xs) = rezzCong2 (_∷_) rezzErase (rezzAllR xs)
-  {-# COMPILE AGDA2HS rezzAllR #-}
+  singAllR : AllR p rα → Singleton rα
+  singAllR List.ANil = sing []
+  singAllR (List.ACons {x = x} _ xs) = singCong2 (_∷_) singErase (singAllR xs)
+  {-# COMPILE AGDA2HS singAllR #-}
 
   allInRScope : ∀ {@0 γ}
                (als : AllR (λ c → c ∈ γ) rα)
@@ -220,7 +220,7 @@ opaque
 
 opaque
   unfolding All findAll lookupAll lookupHere lookupThere
-  unfolding mapAll tabulateAll allIn rezzAll allInScope allLookup
+  unfolding mapAll tabulateAll allIn singAll allInScope allLookup
   unfolding AllR mapAllR
 
   AllThings : Set₁

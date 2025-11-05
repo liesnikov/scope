@@ -63,9 +63,9 @@ opaque
 
 opaque
   unfolding Scope diff
-  idPerm : Rezz α → Permutation α α
-  idPerm (rezz []) = ⌈⌉
-  idPerm (rezz (Erased x ∷ α)) = ⌈ x ~> Zero ⟨ IsZero refl ⟩ ◃ idPerm (rezz α) ⌉
+  idPerm : Singleton α → Permutation α α
+  idPerm (sing []) = ⌈⌉
+  idPerm (sing (Erased x ∷ α)) = ⌈ x ~> Zero ⟨ IsZero refl ⟩ ◃ idPerm (sing α) ⌉
   {-# COMPILE AGDA2HS idPerm inline #-}
 
 -}

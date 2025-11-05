@@ -38,25 +38,25 @@ opaque
   cutEq {α = iErased ∷ α'} (Zero  ⟨ IsZero  refl ⟩) = refl
   cutEq {α = iErased ∷ α'} (Suc n ⟨ IsSuc p ⟩) = cong (λ α → iErased ∷ α ) (cutEq (n ⟨ p ⟩))
 
-  {- cutSplit without unfolding use SplitRefl and therefore needs Rezz α -}
+  {- cutSplit without unfolding use SplitRefl and therefore needs Singleton α -}
   cutSplit : (xp : x ∈ α) → cutTake xp ⋈ ((cutDrop xp) ▸ x) ≡ α
   cutSplit (Zero  ⟨ IsZero  refl ⟩) = EmptyL
   cutSplit (Suc n ⟨ IsSuc p ⟩) = ConsL _ (cutSplit (n ⟨ p ⟩))
   {-# COMPILE AGDA2HS cutSplit #-}
 
-rezzCutDrop : {xp : x ∈ α} → Rezz α → Rezz (cutDrop xp)
-rezzCutDrop αRun = rezzUnbind (rezzSplitRight (cutSplit _) αRun)
-{-# COMPILE AGDA2HS rezzCutDrop inline #-}
+singCutDrop : {xp : x ∈ α} → Singleton α → Singleton (cutDrop xp)
+singCutDrop αRun = singUnbind (singSplitRight (cutSplit _) αRun)
+{-# COMPILE AGDA2HS singCutDrop inline #-}
 
-rezzCutTake : {xp : x ∈ α} → Rezz α → Rezz (cutTake xp)
-rezzCutTake αRun =  rezzSplitLeft (cutSplit _) αRun
-{-# COMPILE AGDA2HS rezzCutTake inline #-}
+singCutTake : {xp : x ∈ α} → Singleton α → Singleton (cutTake xp)
+singCutTake αRun =  singSplitLeft (cutSplit _) αRun
+{-# COMPILE AGDA2HS singCutTake inline #-}
 
 
-subCut :  {xp : x ∈ α} → Rezz α → (cutDrop xp <> cutTake xp) ⊆ α
+subCut :  {xp : x ∈ α} → Singleton α → (cutDrop xp <> cutTake xp) ⊆ α
 subCut {xp = xp} αRun =
   subst0 (λ α' → (cutDrop xp <> cutTake xp) ⊆ α')
-    (cutEq xp) (subJoin (rezzCutTake αRun)  (subBindDrop subRefl) subRefl)
+    (cutEq xp) (subJoin (singCutTake αRun)  (subBindDrop subRefl) subRefl)
 {-# COMPILE AGDA2HS subCut inline #-}
 
 subCutDrop :  {xp : x ∈ α} →  cutDrop xp ⊆ α

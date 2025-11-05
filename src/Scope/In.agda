@@ -48,7 +48,7 @@ infix 6 InR
 syntax InR x rα = rα ∋ x
 
 inToSub : x ∈ α → [ x ] ⊆ α
-inToSub {x = x} (Zero ⟨ IsZero refl ⟩) = subRight (splitRefl (rezz [ x ]))
+inToSub {x = x} (Zero ⟨ IsZero refl ⟩) = subRight (splitRefl (sing [ x ]))
 inToSub (Suc n ⟨ IsSuc p ⟩) = subBindDrop (inToSub (n ⟨ p ⟩))
 {-# COMPILE AGDA2HS inToSub #-}
 
@@ -127,17 +127,17 @@ opaque
 
 opaque
   inJoinCase
-    : Rezz β
+    : Singleton β
     → x ∈ (α <> β) → (x ∈ α → a) → (x ∈ β → a) → a
   inJoinCase r = inSplitCase (splitRefl r)
   {-# COMPILE AGDA2HS inJoinCase #-}
 
 opaque
   inBindCase : x ∈ (α ▸ y) → (x ∈ α → a) → (@0 x ≡ y → a) → a
-  inBindCase {α = α} {y = y} p g f = inJoinCase (rezz ([ y ])) p g ((λ q → (inSingCase q f)))
+  inBindCase {α = α} {y = y} p g f = inJoinCase (sing ([ y ])) p g ((λ q → (inSingCase q f)))
   {-# COMPILE AGDA2HS inBindCase #-}
 
-inScopeInExtScope : Rezz rβ → x ∈ α → x ∈ (extScope α rβ)
+inScopeInExtScope : Singleton rβ → x ∈ α → x ∈ (extScope α rβ)
 inScopeInExtScope r = coerce (subExtScope r subRefl)
 {-# COMPILE AGDA2HS inScopeInExtScope inline #-}
 

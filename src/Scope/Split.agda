@@ -54,9 +54,9 @@ opaque
   splitEmptyRight = EmptyR
   {-# COMPILE AGDA2HS splitEmptyRight inline #-}
 
-  splitRefl : Rezz β → α ⋈ β ≡ (α <> β)
-  splitRefl (rezz []) = splitEmptyRight
-  splitRefl (rezz (Erased x ∷ β)) = ConsR x (splitRefl (rezz β))
+  splitRefl : Singleton β → α ⋈ β ≡ (α <> β)
+  splitRefl (sing []) = splitEmptyRight
+  splitRefl (sing (Erased x ∷ β)) = ConsR x (splitRefl (sing β))
   {-# COMPILE AGDA2HS splitRefl #-}
 
   splitComm : α ⋈ β ≡ γ → β ⋈ α ≡ γ
@@ -114,55 +114,55 @@ opaque
 opaque
   unfolding Split
 
-  rezzSplit : α ⋈ β ≡ γ → Rezz γ → Rezz α × Rezz β
-  rezzSplit EmptyL r = rezz [] , r
-  rezzSplit EmptyR r = r , rezz []
-  rezzSplit (ConsL x p) r =
-    let (r1 , r2) = rezzSplit p (rezzTail r)
-    in  (rezzBind r1) , r2
-  rezzSplit (ConsR x p) r =
-    let (r1 , r2) = rezzSplit p (rezzTail r)
-    in  r1 , rezzBind r2
-  {-# COMPILE AGDA2HS rezzSplit #-}
+  singSplit : α ⋈ β ≡ γ → Singleton γ → Singleton α × Singleton β
+  singSplit EmptyL r = sing [] , r
+  singSplit EmptyR r = r , sing []
+  singSplit (ConsL x p) r =
+    let (r1 , r2) = singSplit p (singTail r)
+    in  (singBind r1) , r2
+  singSplit (ConsR x p) r =
+    let (r1 , r2) = singSplit p (singTail r)
+    in  r1 , singBind r2
+  {-# COMPILE AGDA2HS singSplit #-}
 
 opaque
   unfolding Split
 
-  rezzSplitLeft : α ⋈ β ≡ γ → Rezz γ → Rezz α
-  rezzSplitLeft p r = fst (rezzSplit p r)
-  {-# COMPILE AGDA2HS rezzSplitLeft #-}
+  singSplitLeft : α ⋈ β ≡ γ → Singleton γ → Singleton α
+  singSplitLeft p r = fst (singSplit p r)
+  {-# COMPILE AGDA2HS singSplitLeft #-}
 
-  rezzSplitRight : α ⋈ β ≡ γ → Rezz γ → Rezz β
-  rezzSplitRight p r = snd (rezzSplit p r)
-  {-# COMPILE AGDA2HS rezzSplitRight #-}
+  singSplitRight : α ⋈ β ≡ γ → Singleton γ → Singleton β
+  singSplitRight p r = snd (singSplit p r)
+  {-# COMPILE AGDA2HS singSplitRight #-}
 
-  splitJoinLeft : Rezz β → α₁ ⋈ α₂ ≡ α → (α₁ <> β) ⋈ α₂ ≡ (α <> β)
-  splitJoinLeft (rezz []) p = p
-  splitJoinLeft (rezz (Erased x ∷ α)) p = ConsL x (splitJoinLeft (rezz α) p)
+  splitJoinLeft : Singleton β → α₁ ⋈ α₂ ≡ α → (α₁ <> β) ⋈ α₂ ≡ (α <> β)
+  splitJoinLeft (sing []) p = p
+  splitJoinLeft (sing (Erased x ∷ α)) p = ConsL x (splitJoinLeft (sing α) p)
   {-# COMPILE AGDA2HS splitJoinLeft #-}
 
-  splitJoinRight : Rezz β → α₁ ⋈ α₂ ≡ α → α₁ ⋈ (α₂ <> β) ≡ (α <> β)
-  splitJoinRight (rezz []) p = p
-  splitJoinRight (rezz (Erased x ∷ α)) p = ConsR x (splitJoinRight (rezz α) p)
+  splitJoinRight : Singleton β → α₁ ⋈ α₂ ≡ α → α₁ ⋈ (α₂ <> β) ≡ (α <> β)
+  splitJoinRight (sing []) p = p
+  splitJoinRight (sing (Erased x ∷ α)) p = ConsR x (splitJoinRight (sing α) p)
   {-# COMPILE AGDA2HS splitJoinRight #-}
 
   splitJoin
-    : Rezz β
+    : Singleton β
     → α₁ ⋈ α₂ ≡ α
     → β₁ ⋈ β₂ ≡ β
     → (α₁ <> β₁) ⋈ (α₂ <> β₂) ≡ (α <> β)
   splitJoin r p EmptyL      = splitJoinRight r p
   splitJoin r p EmptyR      = splitJoinLeft  r p
-  splitJoin r p (ConsL x q) = ConsL x (splitJoin (rezzTail r) p q)
-  splitJoin r p (ConsR x q) = ConsR x (splitJoin (rezzTail r) p q)
+  splitJoin r p (ConsL x q) = ConsL x (splitJoin (singTail r) p q)
+  splitJoin r p (ConsR x q) = ConsR x (splitJoin (singTail r) p q)
   {-# COMPILE AGDA2HS splitJoin #-}
 
-splitJoinLeftr : Rezz β → β₁ ⋈ β₂ ≡ β → (α <> β₁) ⋈ β₂ ≡ (α <> β)
+splitJoinLeftr : Singleton β → β₁ ⋈ β₂ ≡ β → (α <> β₁) ⋈ β₂ ≡ (α <> β)
 splitJoinLeftr {β = β} {β₁ = β₁} {β₂ = β₂} {α = α} r p =
   subst (λ γ → (α <> β₁) ⋈ γ ≡ (α <> β)) (leftIdentity β₂) (splitJoin r splitEmptyRight p)
 {-# COMPILE AGDA2HS splitJoinLeftr #-}
 
-splitJoinRightr : Rezz β → β₁ ⋈ β₂ ≡ β → β₁ ⋈ (α <> β₂) ≡ (α <> β)
+splitJoinRightr : Singleton β → β₁ ⋈ β₂ ≡ β → β₁ ⋈ (α <> β₂) ≡ (α <> β)
 splitJoinRightr {β = β} {β₁ = β₁} {β₂ = β₂} {α = α} r p =
   subst (λ γ → γ ⋈ (α <> β₂) ≡ (α <> β)) (leftIdentity β₁) (splitJoin r splitEmptyLeft p)
 {-# COMPILE AGDA2HS splitJoinRightr #-}
@@ -171,11 +171,11 @@ opaque
   unfolding Split
 
   splitBindLeft : α ⋈ β ≡ γ → (α ▸ x) ⋈ β ≡ (γ ▸ x)
-  splitBindLeft {x = x} = splitJoinLeft (rezz [ x ])
+  splitBindLeft {x = x} = splitJoinLeft (sing [ x ])
   {-# COMPILE AGDA2HS splitBindLeft #-}
 
   splitBindRight : α ⋈ β ≡ γ → α ⋈ (β ▸ x) ≡ (γ ▸ x)
-  splitBindRight {x = x} = splitJoinRight (rezz [ x ])
+  splitBindRight {x = x} = splitJoinRight (sing [ x ])
   {-# COMPILE AGDA2HS splitBindRight #-}
 
 {-
@@ -215,6 +215,6 @@ opaque
   ∅-⋈-injective (ConsR x p) rewrite ∅-⋈-injective p = refl
 
 opaque
-  unfolding Split splitRefl rezzSplit splitJoin splitBindLeft decSplit
+  unfolding Split splitRefl singSplit splitJoin splitBindLeft decSplit
   SplitThings : Set₁
   SplitThings = Set
