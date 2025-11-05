@@ -1,4 +1,4 @@
 name: scope
 include: src test
-depend: agda2hs
+depend: agda2hs-base
 flags: --erasure --erase-record-parameters
